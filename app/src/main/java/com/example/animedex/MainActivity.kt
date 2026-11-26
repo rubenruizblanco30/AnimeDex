@@ -9,6 +9,9 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.example.animedex.ui.theme.AnimeDexTheme
+import androidx.compose.runtime.produceState
+import com.example.animedex.ui.theme.AnimeDatabase
+import kotlinx.coroutines.flow.first
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,7 +23,13 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("AnimeDex")
+                    val mensaje = produceState("Cargando…") {
+                        val dao = AnimeDatabase.get(applicationContext).animeDao()
+                        val ficha = dao.detail(28977).first()
+                        value = "${ficha?.anime?.title}: ${ficha?.genres?.size} géneros"
+                    }
+
+                    Text(mensaje.value)
                 }
             }
         }
